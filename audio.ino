@@ -5,15 +5,9 @@
 #include "AudioGeneratorAAC.h"        // AAC decoder
 #include "AudioOutputI2S.h"           //output stream
 
-// buffer size for stream buffering
-// Restored to 30KB. Now that we use AAC 64kbps for Nius, we don't need a huge buffer, 
-// and 90KB caused HTTP connection timeouts and heap fragmentation!
-const int preallocateBufferSize = 30 * 1024;
-// AAC with SBR (HE-AAC) requires ~87KB total. 95000 ensures enough space.
-const int preallocateCodecSize = 95000;
-// pointer to preallocated memory
-void *preallocateBuffer = NULL;
-void *preallocateCodec = NULL;
+// We now use dynamic allocation to prevent AAC SBR crashes and optimize buffer sizes!
+// MP3 uses a large buffer (65KB) because the decoder is small.
+// AAC uses a small buffer (25KB) because the decoder is huge (85KB).
 
 // instances for audio components
 AudioGenerator *decoder = NULL;
@@ -70,17 +64,22 @@ void startUrl() {
   file = new AudioFileSourceICYStream(stationlist[actStation].url);
   // register callback for meta data
   file->RegisterMetadataCB(MDCallback, NULL);
+  String urlStr = String(stationlist[actStation].url);
+  int dynamicBuffSize = 75 * 1024; // Default to 75KB for MP3 (~4.7 seconds of buffer at 128kbps)
+  if (urlStr.indexOf("aac") >= 0 || urlStr.indexOf("AAC") >= 0) {
+    dynamicBuffSize = 25 * 1024; // Reduce buffer to 25KB for AAC (~3.2 seconds at 64kbps) to leave enough RAM for the 85KB SBR decoder
+  }
+  
   // The buffer is MANDATORY for ICY streams! Without it, network latency freezes the decoder.
-  buff = new AudioFileSourceBuffer(file, preallocateBuffer, preallocateBufferSize);
-  Serial.printf("sourcebuffer created - Free mem=%d\n", ESP.getFreeHeap());
+  buff = new AudioFileSourceBuffer(file, dynamicBuffSize);
+  Serial.printf("sourcebuffer created (size=%d) - Free mem=%d\n", dynamicBuffSize, ESP.getFreeHeap());
   
   if (!file->isOpen()) {
     Serial.println("Failed to open stream!");
     return;
   }
 
-  // create and start a new decoder with preallocation depending on format
-  String urlStr = String(stationlist[actStation].url);
+  // create and start a new decoder with dynamic allocation depending on format
   if (urlStr.indexOf("aac") >= 0 || urlStr.indexOf("AAC") >= 0) {
     decoder = (AudioGenerator *)new AudioGeneratorAAC();
   } else {
@@ -93,19 +92,6 @@ void startUrl() {
 }
 
 void setup_audio() {
-  // reserve buffer for decoder and stream (size is now safely set to 60KB)
-  preallocateBuffer = malloc(preallocateBufferSize); // Stream-file-buffer
-  // preallocateCodec = malloc(preallocateCodecSize);   // Decoder-buffer
-  
-  if (!preallocateBuffer) {
-    Serial.printf_P(
-        PSTR("FATAL ERROR:  Unable to preallocate %d bytes for app\n"),
-        preallocateBufferSize + preallocateCodecSize);
-    while (1) {
-      yield(); // Infinite halt
-    }
-  }
-
   // create I2S output for external DAC (e.g. PCM5102)
   // parameters: port=0, output_mode=0 (EXTERNAL_I2S), dma_buf_count=32 (default is 8), use_apll=0
   out = new AudioOutputI2S(0, 0, 32, 0);
