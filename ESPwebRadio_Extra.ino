@@ -39,7 +39,7 @@ typedef struct {
   char name[100]; //stations name
 } Station;
 
-#define STATIONS 1 //number of available stations
+#define STATIONS 4 //number of available stations
 
 //station list (stations can now be modified by webinterface)
 Station stationlist[STATIONS];
@@ -76,6 +76,8 @@ void setup() {
 
   //set current station to 0
   curStation = 0;
+  //start preferences instance
+  pref.begin("radio", false);
   //set current station to saved value if available
   if (pref.isKey("station")) {
     curStation = pref.getUShort("station");

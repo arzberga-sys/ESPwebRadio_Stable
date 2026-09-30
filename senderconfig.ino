@@ -15,7 +15,7 @@ void setup_senderConfig() {
 
     Preferences sender;                 // preferences-instance for senderlist
     // match the namespace from senderlist_Extra.ino
-    sender.begin("senderlist2", false);
+    sender.begin("senders_v4", false);
 
     int paramsNr = request->params();   // if submit, here we'll get 40 POST-parameters
     Serial.println(paramsNr);

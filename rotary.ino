@@ -34,22 +34,18 @@ void rotary_loop() {
     }
   }
   
-  // if no change happened within 10s set active station as current station
-  if ((lastchange > 0) && ((millis() - lastchange) > 10000)) {
-    curStation = actStation;
-    lastchange = 0;
-    // showStation();
-  }
-  
-  // react on rotary encoder switch
-  if (rotaryEncoder.isEncoderButtonClicked()) {
+  // Auto-Switch: If user stopped turning for 1.5 seconds, switch station automatically!
+  if ((lastchange > 0) && ((millis() - lastchange) > 1500)) {
     if (curStation != actStation) {
-      // set current station as active station and start streaming
       actStation = curStation;
-      Serial.printf("Active station %s\n", stationlist[actStation].name);
+      Serial.printf("Auto-switching to station %s... Loading stream!\n", stationlist[actStation].name);
       pref.putUShort("station", curStation);
+      
+      // We switch the stream directly without restarting!
+      // ESP.restart() causes this specific ESP32 board to hang in the bootloader.
       startUrl();
     }
+    lastchange = 0; // Reset timer
   }
 }
 

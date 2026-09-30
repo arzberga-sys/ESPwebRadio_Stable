@@ -69,7 +69,7 @@ void startUrl() {
   file = new AudioFileSourceICYStream(stationlist[actStation].url);
   // register callback for meta data
   file->RegisterMetadataCB(MDCallback, NULL);
-  // create a new buffer which uses the preallocated memory
+  // The buffer is MANDATORY for ICY streams! Without it, network latency freezes the decoder.
   buff = new AudioFileSourceBuffer(file, preallocateBuffer, preallocateBufferSize);
   Serial.printf_P(PSTR("sourcebuffer created - Free mem=%d\n"),
                   ESP.getFreeHeap());
@@ -77,7 +77,7 @@ void startUrl() {
   decoder = (AudioGenerator *)new AudioGeneratorMP3(preallocateCodec, preallocateCodecSize);
   Serial.printf_P(PSTR("created decoder\n"));
   Serial.printf_P("Decoder start...\n");
-  decoder->begin(buff, out);
+  decoder->begin(buff, out); // Stream through buffer!
 }
 
 void setup_audio() {
