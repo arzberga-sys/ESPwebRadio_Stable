@@ -83,8 +83,8 @@ void startUrl() {
 
 void setup_audio() {
   // create I2S output for external DAC (e.g. PCM5102)
-  // parameters: port=0, output_mode=0 (EXTERNAL_I2S), dma_buf_count=32 (default is 8), use_apll=0
-  out = new AudioOutputI2S(0, 0, 32, 0);
+  // parameters: port=0, output_mode=0 (EXTERNAL_I2S), dma_buf_count=32 (default is 8), use_apll=1 (APLL enables high-precision clock for better audio quality)
+  out = new AudioOutputI2S(0, 0, 32, 1);
 }
 
 // to be called in 'loop()'
