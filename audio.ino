@@ -6,8 +6,9 @@
 #include "AudioOutputI2S.h"           //output stream
 
 // buffer size for stream buffering
-//  Increased to 90KB. 60KB was slightly too small for 192kbps streams (Nius Radio).
-const int preallocateBufferSize = 90 * 1024;
+// Restored to 30KB. Now that we use AAC 64kbps for Nius, we don't need a huge buffer, 
+// and 90KB caused HTTP connection timeouts and heap fragmentation!
+const int preallocateBufferSize = 30 * 1024;
 // AAC with SBR (HE-AAC) requires ~85KB. MP3 only needs 29KB.
 const int preallocateCodecSize = 85000;
 // pointer to preallocated memory
