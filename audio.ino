@@ -8,7 +8,8 @@
 // buffer size for stream buffering
 //  Increased to 90KB. 60KB was slightly too small for 192kbps streams (Nius Radio).
 const int preallocateBufferSize = 90 * 1024;
-const int preallocateCodecSize = 38000; // 38000 allows both MP3 (29KB) and AAC (34KB) to fit comfortably
+// AAC with SBR (HE-AAC) requires ~85KB. MP3 only needs 29KB.
+const int preallocateCodecSize = 85000;
 // pointer to preallocated memory
 void *preallocateBuffer = NULL;
 void *preallocateCodec = NULL;
