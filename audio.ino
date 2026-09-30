@@ -5,9 +5,8 @@
 #include "AudioOutputI2S.h"           //output stream
 
 // buffer size for stream buffering
-//  Increased from 30KB to 60KB. 30KB causes buffer underruns (stuttering).
-//  120KB caused malloc crashes. 60KB is the sweet spot.
-const int preallocateBufferSize = 60 * 1024; // was 120*1024, then 30*1024
+//  Increased to 90KB. 60KB was slightly too small for 192kbps streams (Nius Radio).
+const int preallocateBufferSize = 90 * 1024;
 const int preallocateCodecSize = 29192; // 29192 is the exact max mem needed for
                                         // MP3 codec, saving 10KB RAM over 40000
 // pointer to preallocated memory
