@@ -3,17 +3,16 @@
 void setup_senderList()
 {
   // using a new, unified namespace to force updating the saved stations in flash
-  sender.begin("senders_v6", false);
+  sender.begin("senders_v7", false);
 
   const char *default_names[STATIONS] = {
-    "Extra Radio", "NDR 2", "Nius Radio", "Radio Ramasuri", "Mainwelle",
+    "Extra Radio", "NDR 2", "Radio Ramasuri", "Mainwelle",
     "RMC 80s", "RMC 90s", "Antenne Bayern", "Bayern 1", "Radio Galaxy"
   };
 
   const char *default_urls[STATIONS] = {
     "http://extra-radio.radionetz.de/extra-radio.mp3",
     "http://icecast.ndr.de/ndr/ndr2/niedersachsen/mp3/128/stream.mp3",
-    "http://nius.stream23.radiohost.de/live_aac-64",
     "http://ramasuri.radioho.st/ramasuri-live/mp3-192/",
     "http://webstream.mainwelle.de/radio-mainwelle.mp3",
     "http://edge.radiomontecarlo.net/rmcweb008",

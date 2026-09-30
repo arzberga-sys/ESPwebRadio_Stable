@@ -2,12 +2,10 @@
 #include "AudioFileSourceBuffer.h"    //input buffer
 #include "AudioFileSourceICYStream.h" //input stream
 #include "AudioGeneratorMP3.h"        //decoder
-#include "AudioGeneratorAAC.h"        // AAC decoder
 #include "AudioOutputI2S.h"           //output stream
 
-// We now use dynamic allocation to prevent AAC SBR crashes and optimize buffer sizes!
-// MP3 uses a large buffer (65KB) because the decoder is small.
-// AAC uses a small buffer (25KB) because the decoder is huge (85KB).
+// MP3 uses a massive buffer (90KB) for maximum stability.
+// Since we removed AAC, we have plenty of RAM to spare for MP3 buffering!
 
 // instances for audio components
 AudioGenerator *decoder = NULL;
@@ -64,11 +62,7 @@ void startUrl() {
   file = new AudioFileSourceICYStream(stationlist[actStation].url);
   // register callback for meta data
   file->RegisterMetadataCB(MDCallback, NULL);
-  String urlStr = String(stationlist[actStation].url);
-  int dynamicBuffSize = 75 * 1024; // Default to 75KB for MP3 (~4.7 seconds of buffer at 128kbps)
-  if (urlStr.indexOf("aac") >= 0 || urlStr.indexOf("AAC") >= 0) {
-    dynamicBuffSize = 25 * 1024; // Reduce buffer to 25KB for AAC (~3.2 seconds at 64kbps) to leave enough RAM for the 85KB SBR decoder
-  }
+  int dynamicBuffSize = 90 * 1024; // 90KB buffer for ultra-stable MP3 stream
   
   // The buffer is MANDATORY for ICY streams! Without it, network latency freezes the decoder.
   buff = new AudioFileSourceBuffer(file, dynamicBuffSize);
@@ -79,12 +73,8 @@ void startUrl() {
     return;
   }
 
-  // create and start a new decoder with dynamic allocation depending on format
-  if (urlStr.indexOf("aac") >= 0 || urlStr.indexOf("AAC") >= 0) {
-    decoder = (AudioGenerator *)new AudioGeneratorAAC();
-  } else {
-    decoder = (AudioGenerator *)new AudioGeneratorMP3();
-  }
+  // create and start a new MP3 decoder
+  decoder = (AudioGenerator *)new AudioGeneratorMP3();
   Serial.println("created decoder");
   Serial.println("Decoder start...");
   Serial.flush();

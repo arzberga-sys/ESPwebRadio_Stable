@@ -39,7 +39,7 @@ typedef struct {
   char name[100]; //stations name
 } Station;
 
-#define STATIONS 10 //number of available stations
+#define STATIONS 9 //number of available stations
 
 //station list (stations can now be modified by webinterface)
 Station stationlist[STATIONS];
