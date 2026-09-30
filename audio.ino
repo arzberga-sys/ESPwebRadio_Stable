@@ -9,8 +9,8 @@
 // Restored to 30KB. Now that we use AAC 64kbps for Nius, we don't need a huge buffer, 
 // and 90KB caused HTTP connection timeouts and heap fragmentation!
 const int preallocateBufferSize = 30 * 1024;
-// AAC with SBR (HE-AAC) requires ~85KB. MP3 only needs 29KB.
-const int preallocateCodecSize = 85000;
+// AAC with SBR (HE-AAC) requires ~87KB total. 95000 ensures enough space.
+const int preallocateCodecSize = 95000;
 // pointer to preallocated memory
 void *preallocateBuffer = NULL;
 void *preallocateCodec = NULL;
