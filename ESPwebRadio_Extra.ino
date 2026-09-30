@@ -99,7 +99,6 @@ void loop() {
     webPlayRequest = false;
     Serial.printf("Web UI triggered switch to station %d...\n", actStation);
     startUrl();
-    showStation();
   }
 
   //check if stream has ended normally not on ICY streams
