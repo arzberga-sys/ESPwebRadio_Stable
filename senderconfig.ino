@@ -15,7 +15,7 @@ void setup_senderConfig() {
 
     Preferences sender;                 // preferences-instance for senderlist
     // match the namespace from senderlist_Extra.ino
-    sender.begin("senders_v4", false);
+    sender.begin("senders_v5", false);
 
     extern bool webPlayRequest;
 
