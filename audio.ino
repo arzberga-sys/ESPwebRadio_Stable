@@ -2,13 +2,13 @@
 #include "AudioFileSourceBuffer.h"    //input buffer
 #include "AudioFileSourceICYStream.h" //input stream
 #include "AudioGeneratorMP3.h"        //decoder
+#include "AudioGeneratorAAC.h"        // AAC decoder
 #include "AudioOutputI2S.h"           //output stream
 
 // buffer size for stream buffering
 //  Increased to 90KB. 60KB was slightly too small for 192kbps streams (Nius Radio).
 const int preallocateBufferSize = 90 * 1024;
-const int preallocateCodecSize = 29192; // 29192 is the exact max mem needed for
-                                        // MP3 codec, saving 10KB RAM over 40000
+const int preallocateCodecSize = 38000; // 38000 allows both MP3 (29KB) and AAC (34KB) to fit comfortably
 // pointer to preallocated memory
 void *preallocateBuffer = NULL;
 void *preallocateCodec = NULL;
@@ -77,8 +77,13 @@ void startUrl() {
     return;
   }
 
-  // create and start a new decoder with preallocation
-  decoder = (AudioGenerator *)new AudioGeneratorMP3(preallocateCodec, preallocateCodecSize);
+  // create and start a new decoder with preallocation depending on format
+  String urlStr = String(stationlist[actStation].url);
+  if (urlStr.indexOf("aac") >= 0 || urlStr.indexOf("AAC") >= 0) {
+    decoder = (AudioGenerator *)new AudioGeneratorAAC(preallocateCodec, preallocateCodecSize);
+  } else {
+    decoder = (AudioGenerator *)new AudioGeneratorMP3(preallocateCodec, preallocateCodecSize);
+  }
   Serial.println("created decoder");
   Serial.println("Decoder start...");
   Serial.flush();
