@@ -34,8 +34,7 @@ void rotary_loop() {
     }
   }
   
-  // Auto-Switch: If user stopped turning for 1.5 seconds, switch station automatically!
-  if ((lastchange > 0) && ((millis() - lastchange) > 1500)) {
+  if ((lastchange > 0) && ((millis() - lastchange) > 600)) {
     if (curStation != actStation) {
       actStation = curStation;
       Serial.printf("Auto-switching to station %s... Loading stream!\n", stationlist[actStation].name);

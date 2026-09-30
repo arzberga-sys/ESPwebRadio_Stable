@@ -39,7 +39,7 @@ typedef struct {
   char name[100]; //stations name
 } Station;
 
-#define STATIONS 4 //number of available stations
+#define STATIONS 10 //number of available stations
 
 //station list (stations can now be modified by webinterface)
 Station stationlist[STATIONS];
@@ -91,8 +91,17 @@ void setup() {
   startUrl();
 }
 
+bool webPlayRequest = false;
+
 // main loop
 void loop() {
+  if (webPlayRequest) {
+    webPlayRequest = false;
+    Serial.printf("Web UI triggered switch to station %d...\n", actStation);
+    startUrl();
+    showStation();
+  }
+
   //check if stream has ended normally not on ICY streams
   if (!loop_audio()) {
     Serial.printf("MP3 done\n");

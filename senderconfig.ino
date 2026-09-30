@@ -17,13 +17,14 @@ void setup_senderConfig() {
     // match the namespace from senderlist_Extra.ino
     sender.begin("senders_v4", false);
 
+    extern bool webPlayRequest;
+
     int paramsNr = request->params();   // if submit, here we'll get 40 POST-parameters
     Serial.println(paramsNr);
     int paramCountOk = 0;
     int gotAnswer = false;
     int j;
     String para = "";
-    int needReboot = false;
 
     // if user has chosen to play a sender on webinterface
     if (paramsNr == 1) {
@@ -33,15 +34,11 @@ void setup_senderConfig() {
         actStation = curStation;
         pref.putUShort("station",curStation);
         
-        // ### not nice, but working :(
-        // The call of 'startUrl()' and 'showStation()' throws an exception ?!?!?
-        // That's why a reboot is prepared here (reboots after HTML-code is delivered)
-        //startUrl();
-        //showStation();
+        // trigger switch in main loop to prevent AsyncWebServer exceptions
+        webPlayRequest = true;
 
         pref.end();
         paramsNr = 0;       // don't get in next for-loop
-        needReboot = true;
       }
     }
 
@@ -128,11 +125,7 @@ void setup_senderConfig() {
     // ### Send HTML-code to Browser
     request->send(200, "text/html", s);
 
-    // ### Reboot if a sender was chosen by webinterface (see above)
-    if (needReboot) {
-      delay(1000);
-      ESP.restart();
-    }  
+    // ### Switch happens seamlessly in loop() now  
 
   }); 
 
