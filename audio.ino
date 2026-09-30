@@ -82,9 +82,9 @@ void startUrl() {
   // create and start a new decoder with preallocation depending on format
   String urlStr = String(stationlist[actStation].url);
   if (urlStr.indexOf("aac") >= 0 || urlStr.indexOf("AAC") >= 0) {
-    decoder = (AudioGenerator *)new AudioGeneratorAAC(preallocateCodec, preallocateCodecSize);
+    decoder = (AudioGenerator *)new AudioGeneratorAAC();
   } else {
-    decoder = (AudioGenerator *)new AudioGeneratorMP3(preallocateCodec, preallocateCodecSize);
+    decoder = (AudioGenerator *)new AudioGeneratorMP3();
   }
   Serial.println("created decoder");
   Serial.println("Decoder start...");
@@ -95,9 +95,9 @@ void startUrl() {
 void setup_audio() {
   // reserve buffer for decoder and stream (size is now safely set to 60KB)
   preallocateBuffer = malloc(preallocateBufferSize); // Stream-file-buffer
-  preallocateCodec = malloc(preallocateCodecSize);   // Decoder-buffer
+  // preallocateCodec = malloc(preallocateCodecSize);   // Decoder-buffer
   
-  if (!preallocateBuffer || !preallocateCodec) {
+  if (!preallocateBuffer) {
     Serial.printf_P(
         PSTR("FATAL ERROR:  Unable to preallocate %d bytes for app\n"),
         preallocateBufferSize + preallocateCodecSize);
