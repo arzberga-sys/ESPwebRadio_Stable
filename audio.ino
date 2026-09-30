@@ -71,12 +71,18 @@ void startUrl() {
   file->RegisterMetadataCB(MDCallback, NULL);
   // The buffer is MANDATORY for ICY streams! Without it, network latency freezes the decoder.
   buff = new AudioFileSourceBuffer(file, preallocateBuffer, preallocateBufferSize);
-  Serial.printf_P(PSTR("sourcebuffer created - Free mem=%d\n"),
-                  ESP.getFreeHeap());
+  Serial.printf("sourcebuffer created - Free mem=%d\n", ESP.getFreeHeap());
+  
+  if (!file->isOpen()) {
+    Serial.println("Failed to open stream!");
+    return;
+  }
+
   // create and start a new decoder with preallocation
   decoder = (AudioGenerator *)new AudioGeneratorMP3(preallocateCodec, preallocateCodecSize);
-  Serial.printf_P(PSTR("created decoder\n"));
-  Serial.printf_P("Decoder start...\n");
+  Serial.println("created decoder");
+  Serial.println("Decoder start...");
+  Serial.flush();
   decoder->begin(buff, out); // Stream through buffer!
 }
 
@@ -100,7 +106,7 @@ void setup_audio() {
 
 // to be called in 'loop()'
 int loop_audio() {
-  if (decoder->isRunning()) {
+  if (decoder && decoder->isRunning()) {
     if (!decoder->loop()) {
       decoder->stop();
     }

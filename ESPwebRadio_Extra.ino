@@ -103,12 +103,15 @@ void loop() {
 
   //check if stream has ended normally not on ICY streams
   if (!loop_audio()) {
-    Serial.printf("MP3 done\n");
-
-    // Restart ESP when streaming is done or errored
-    delay(10000);
-
-    ESP.restart();
+    static unsigned long lastRetry = 0;
+    if (millis() - lastRetry > 5000) {
+      Serial.printf("Stream stopped or failed. Retrying in 5 seconds...\n");
+      lastRetry = millis();
+      startUrl();
+    }
+  } else {
+    // If audio is successfully looping, keep our retry timer fresh
+    // so we don't immediately retry if it stops.
   }
   //read events from rotary encoder
   rotary_loop();
