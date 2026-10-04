@@ -62,7 +62,7 @@ void startUrl() {
   file = new AudioFileSourceICYStream(stationlist[actStation].url);
   // register callback for meta data
   file->RegisterMetadataCB(MDCallback, NULL);
-  int dynamicBuffSize = 90 * 1024; // 90KB buffer for ultra-stable MP3 stream
+  int dynamicBuffSize = 40 * 1024; // 90KB buffer for ultra-stable MP3 stream
   
   // The buffer is MANDATORY for ICY streams! Without it, network latency freezes the decoder.
   buff = new AudioFileSourceBuffer(file, dynamicBuffSize);

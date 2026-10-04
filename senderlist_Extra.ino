@@ -14,8 +14,8 @@ void setup_senderList()
     "http://extra-radio.radionetz.de/extra-radio.mp3",
     "http://icecast.ndr.de/ndr/ndr2/niedersachsen/mp3/128/stream.mp3",
     "http://webstream.mainwelle.de/radio-mainwelle.mp3",
-    "http://s6-webradio.antenne.de/antenne/stream/mp3",
-    "http://dispatcher.rndfnk.com/br/br1/schwaben/mp3/mid",
+    "http://stream.antenne.de/antenne/stream/mp3",
+    "http://d131.rndfnk.com/ard/br/br1/schwaben/mp3/128/stream.mp3",
     "http://rs4.stream24.net/galaxy-passau.mp3"
   };
 
