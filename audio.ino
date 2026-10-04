@@ -87,6 +87,14 @@ void setup_audio() {
   out = new AudioOutputI2S(0, 0, 32, 1);
 }
 
+void applyVolume() {
+  extern float currentVolume;
+  extern bool isMuted;
+  if (out) {
+    out->SetGain(isMuted ? 0.0 : currentVolume);
+  }
+}
+
 // to be called in 'loop()'
 int loop_audio() {
   if (decoder && decoder->isRunning()) {

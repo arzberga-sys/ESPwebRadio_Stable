@@ -52,6 +52,8 @@ Preferences sender;
 uint8_t curStation = 0;   //index for current selected station in stationlist
 uint8_t actStation = 0;   //index for current station in station list used for streaming 
 uint32_t lastchange = 0;  //time of last selection change
+float currentVolume = 1.0;
+bool isMuted = false;
 
 
 //setup
@@ -83,6 +85,15 @@ void setup() {
     curStation = pref.getUShort("station");
     if (curStation >= STATIONS) curStation = 0; // Fix out of bounds if an invalid station was saved
   }
+  if (pref.isKey("volume")) {
+    currentVolume = pref.getFloat("volume", 1.0);
+  }
+  if (pref.isKey("mute")) {
+    isMuted = pref.getBool("mute", false);
+  }
+  
+  extern void applyVolume();
+  applyVolume();
   
   //set active station to current station 
   //show on display and start streaming

@@ -39,6 +39,20 @@ const char SENDER_page[] PROGMEM = R"=====(
         margin-right: 30px; 
       }
 
+      .btn {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 16pt !important;
+        color: #ffffff !important;
+        background-color: #5555FF;
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none !important;
+        margin-right: 10px;
+      }
+      .btn:hover {
+        background-color: #3333CC;
+      }
+
     </style>
   <head>
   <body>
@@ -46,6 +60,14 @@ const char SENDER_page[] PROGMEM = R"=====(
     <p>
       *feedback1*
     </p>
+    <h3>Lautstärke</h3>
+    <form method="POST">
+      <input type="range" name="volume" min="0" max="20" value="*volvalue*" onchange="this.form.submit()" style="width: 80%; height: 30px; margin-bottom: 20px;">
+    </form>
+    <p>
+      <a href="?vol=mute" class="btn">*mutelabel*</a>
+    </p>
+    <hr>
     <h3>Senderliste</h3>
     <form method="POST">
       <input type="submit" value="alles speichern" style="background-color:#FF5555;">

@@ -7,6 +7,10 @@
 // Webserver on port 80
 AsyncWebServer serverC(80);
 
+extern float currentVolume;
+extern bool isMuted;
+void applyVolume();
+
 // Webserver-config - called once in 'Setup()' 
 void setup_senderConfig() {
 
@@ -26,20 +30,49 @@ void setup_senderConfig() {
     int j;
     String para = "";
 
-    // if user has chosen to play a sender on webinterface
-    if (paramsNr == 1) {
-      AsyncWebParameter* p2 = request->getParam(0);
+    // Check for action parameters (play, vol, volume)
+    bool isAction = false;
+    bool isVolumeChanged = false;
+    
+    for (int i=0; i<paramsNr; i++) {
+      AsyncWebParameter* p2 = request->getParam(i);
+      
       if (p2->name() == "play") {
         curStation = atoi((p2->value()).c_str());
         actStation = curStation;
         pref.putUShort("station",curStation);
-        
-        // trigger switch in main loop to prevent AsyncWebServer exceptions
         webPlayRequest = true;
-
-        pref.end();
-        paramsNr = 0;       // don't get in next for-loop
+        isAction = true;
       }
+      else if (p2->name() == "vol") {
+        String volStr = p2->value();
+        if (volStr == "mute") {
+          isMuted = !isMuted;
+          isVolumeChanged = true;
+        }
+        isAction = true;
+      }
+      else if (p2->name() == "volume") {
+        float newVol = p2->value().toFloat() / 10.0;
+        currentVolume = newVol;
+        if (currentVolume > 2.0) currentVolume = 2.0;
+        if (currentVolume < 0.0) currentVolume = 0.0;
+        isVolumeChanged = true;
+        isAction = true;
+      }
+    }
+    
+    if (isVolumeChanged) {
+        pref.begin("radio", false);
+        pref.putFloat("volume", currentVolume);
+        pref.putBool("mute", isMuted);
+        pref.end();
+        applyVolume();
+    }
+    
+    if (isAction) {
+        request->redirect("/");
+        return;
     }
 
     
@@ -87,6 +120,14 @@ void setup_senderConfig() {
 
     // ### Fill HTML template
     String s = SENDER_page;         // read HTML template
+    
+    if (isMuted) {
+      s.replace("*mutelabel*", "Ton an");
+    } else {
+      s.replace("*mutelabel*", "Stumm");
+    }
+    s.replace("*volvalue*", String((int)(currentVolume * 10)));
+    
     String fields = "";             // workmemory for field-HTML-code
 
 
