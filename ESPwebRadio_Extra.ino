@@ -35,11 +35,11 @@
 #include "ESPAsyncWebServer.h"
 //structure for stationlist
 typedef struct {
-  char url[100];  //stream url
+  char url[160];  //stream url
   char name[100]; //stations name
 } Station;
 
-#define STATIONS 6 //number of available stations
+#define STATIONS 7 //number of available stations
 
 //station list (stations can now be modified by webinterface)
 Station stationlist[STATIONS];
