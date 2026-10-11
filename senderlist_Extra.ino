@@ -3,11 +3,11 @@
 void setup_senderList()
 {
   // using a new, unified namespace to force updating the saved stations in flash
-  sender.begin("senders_v11", false);
+  sender.begin("senders_v12", false);
 
   const char *default_names[STATIONS] = {
     "Extra Radio", "NDR 2", "Mainwelle",
-    "FFH 2000er", "Absolut Bella", "80s80s", "Radio Galaxy"
+    "FFH 2000er", "Absolut Bella", "Radio Galaxy"
   };
 
   const char *default_urls[STATIONS] = {
@@ -16,7 +16,6 @@ void setup_senderList()
     "http://webstream.mainwelle.de/radio-mainwelle.mp3",
     "http://mp3.ffh.de/ffhchannels/hq2000er.mp3",
     "http://absolut-bella.live-sm.absolutradio.de/absolut-bella/stream/mp3",
-    "http://regiocast.streamabc.net/regc-80s80smweb2517500-mp3-128-7712602",
     "http://rs4.stream24.net/galaxy-passau.mp3"
   };
 
