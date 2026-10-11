@@ -19,10 +19,9 @@ void setup_senderConfig() {
 
     Preferences sender;                 // preferences-instance for senderlist
     // match the namespace from senderlist_Extra.ino
-    sender.begin("senders_v9", false);
+    sender.begin("senders_v10", false);
 
     extern bool webPlayRequest;
-    extern bool webPowerRequest;
     extern bool isPlaying;
 
     int paramsNr = request->params();   // if submit, here we'll get 40 POST-parameters

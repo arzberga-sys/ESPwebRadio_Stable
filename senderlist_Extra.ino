@@ -3,11 +3,11 @@
 void setup_senderList()
 {
   // using a new, unified namespace to force updating the saved stations in flash
-  sender.begin("senders_v9", false);
+  sender.begin("senders_v10", false);
 
   const char *default_names[STATIONS] = {
     "Extra Radio", "NDR 2", "Mainwelle",
-    "Antenne Bayern", "Bayern 1", "Radio Galaxy"
+    "Antenne Bayern", "80s80s", "Radio Galaxy"
   };
 
   const char *default_urls[STATIONS] = {
@@ -15,7 +15,7 @@ void setup_senderList()
     "http://icecast.ndr.de/ndr/ndr2/niedersachsen/mp3/128/stream.mp3",
     "http://webstream.mainwelle.de/radio-mainwelle.mp3",
     "http://stream.antenne.de/antenne/stream/mp3",
-    "http://d131.rndfnk.com/ard/br/br1/schwaben/mp3/128/stream.mp3",
+    "http://streams.80s80s.de/web/mp3-128/streams.80s80s.de/",
     "http://rs4.stream24.net/galaxy-passau.mp3"
   };
 
