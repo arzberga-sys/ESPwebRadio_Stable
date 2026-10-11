@@ -48,8 +48,15 @@ void setup_senderConfig() {
         isAction = true;
       }
       else if (p2->name() == "power") {
-        if (p2->value() == "toggle") {
-          webPowerRequest = true;
+        String val = p2->value();
+        if (val == "off" || (val == "toggle" && isPlaying)) {
+          isPlaying = false;
+          extern bool webPowerStop;
+          webPowerStop = true;
+        } else if (val == "on" || (val == "toggle" && !isPlaying)) {
+          isPlaying = true;
+          extern bool webPowerStart;
+          webPowerStart = true;
         }
         isAction = true;
       }
@@ -131,11 +138,13 @@ void setup_senderConfig() {
     String s = SENDER_page;         // read HTML template
     
     if (isPlaying) {
+      s.replace("*powervalue*", "off");
       s.replace("*powerlabel*", "&#9632; Aus (Standby)");
       s.replace("*powercolor*", "#CC0000");
       s.replace("*radiostatus*", String("&#9654; Läuft: ") + stationlist[actStation].name);
       s.replace("*statuscolor*", "#008800");
     } else {
+      s.replace("*powervalue*", "on");
       s.replace("*powerlabel*", "&#9654; Einschalten");
       s.replace("*powercolor*", "#00AA00");
       s.replace("*radiostatus*", "&#9632; Standby (Stream pausiert &middot; 0 KB Traffic)");

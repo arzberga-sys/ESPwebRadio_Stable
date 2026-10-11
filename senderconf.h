@@ -65,7 +65,7 @@ const char SENDER_page[] PROGMEM = R"=====(
       *feedback1*
     </p>
     <p style="margin: 20px 0;">
-      <a href="?power=toggle" class="btn" style="background-color: *powercolor*;">*powerlabel*</a>
+      <a href="?power=*powervalue*" class="btn" style="background-color: *powercolor*;">*powerlabel*</a>
       <a href="?vol=mute" class="btn">*mutelabel*</a>
     </p>
     <hr>

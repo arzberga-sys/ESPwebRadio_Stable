@@ -57,7 +57,8 @@ bool isMuted = false;
 bool isPlaying = true;    // Playback state: true = streaming, false = standby (0 traffic)
 
 bool webPlayRequest = false;
-bool webPowerRequest = false;
+bool webPowerStop = false;
+bool webPowerStart = false;
 
 extern void applyVolume();
 extern void muteOutput();
@@ -65,17 +66,25 @@ extern void stopPlaying();
 extern void startUrl();
 extern int loop_audio();
 
+void stopRadio() {
+  Serial.println("Stopping radio stream (Standby)...");
+  stopPlaying();
+  muteOutput();
+}
+
+void startRadio() {
+  Serial.printf("Starting radio stream (Station %d: %s)...\n", actStation, stationlist[actStation].name);
+  applyVolume();
+  startUrl();
+}
+
 void togglePlayStop() {
   if (isPlaying) {
-    Serial.println("Stopping radio stream (Standby)...");
-    stopPlaying();
-    muteOutput();
     isPlaying = false;
+    stopRadio();
   } else {
-    Serial.printf("Starting radio stream (Station %d: %s)...\n", actStation, stationlist[actStation].name);
-    applyVolume();
     isPlaying = true;
-    startUrl();
+    startRadio();
   }
 }
 
@@ -127,17 +136,21 @@ void setup() {
 
 // main loop
 void loop() {
-  if (webPowerRequest) {
-    webPowerRequest = false;
-    togglePlayStop();
+  if (webPowerStop) {
+    webPowerStop = false;
+    stopRadio();
+  }
+
+  if (webPowerStart) {
+    webPowerStart = false;
+    startRadio();
   }
 
   if (webPlayRequest) {
     webPlayRequest = false;
     Serial.printf("Web UI triggered switch to station %d...\n", actStation);
     isPlaying = true;
-    applyVolume();
-    startUrl();
+    startRadio();
   }
 
   // Only decode and stream audio if currently playing

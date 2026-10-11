@@ -43,12 +43,10 @@ void stopPlaying() {
     decoder = NULL;
   }
   if (buff) {
-    buff->close();
     delete buff;
     buff = NULL;
   }
   if (file) {
-    file->close();
     delete file;
     file = NULL;
   }

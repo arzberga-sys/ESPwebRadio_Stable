@@ -1,6 +1,6 @@
 --- src/AudioFileSourceICYStream.cpp
 +++ src/AudioFileSourceICYStream.cpp
-@@ -47,6 +47,11 @@
+@@ -47,6 +47,12 @@
    http.addHeader("Icy-MetaData", "1");
    http.collectHeaders( hdr, 4 );
    http.setReuse(true);
@@ -9,6 +9,7 @@
 +#else
 +  http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
 +#endif
++  http.setTimeout(5000);
    int code = http.GET();
    if (code != HTTP_CODE_OK) {
      http.end();
