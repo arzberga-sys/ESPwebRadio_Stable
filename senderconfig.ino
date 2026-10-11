@@ -19,9 +19,11 @@ void setup_senderConfig() {
 
     Preferences sender;                 // preferences-instance for senderlist
     // match the namespace from senderlist_Extra.ino
-    sender.begin("senders_v6", false);
+    sender.begin("senders_v9", false);
 
     extern bool webPlayRequest;
+    extern bool webPowerRequest;
+    extern bool isPlaying;
 
     int paramsNr = request->params();   // if submit, here we'll get 40 POST-parameters
     Serial.println(paramsNr);
@@ -30,7 +32,7 @@ void setup_senderConfig() {
     int j;
     String para = "";
 
-    // Check for action parameters (play, vol, volume)
+    // Check for action parameters (play, power, vol, volume)
     bool isAction = false;
     bool isVolumeChanged = false;
     
@@ -41,7 +43,14 @@ void setup_senderConfig() {
         curStation = atoi((p2->value()).c_str());
         actStation = curStation;
         pref.putUShort("station",curStation);
+        isPlaying = true;
         webPlayRequest = true;
+        isAction = true;
+      }
+      else if (p2->name() == "power") {
+        if (p2->value() == "toggle") {
+          webPowerRequest = true;
+        }
         isAction = true;
       }
       else if (p2->name() == "vol") {
@@ -121,6 +130,18 @@ void setup_senderConfig() {
     // ### Fill HTML template
     String s = SENDER_page;         // read HTML template
     
+    if (isPlaying) {
+      s.replace("*powerlabel*", "&#9632; Aus (Standby)");
+      s.replace("*powercolor*", "#CC0000");
+      s.replace("*radiostatus*", String("&#9654; Läuft: ") + stationlist[actStation].name);
+      s.replace("*statuscolor*", "#008800");
+    } else {
+      s.replace("*powerlabel*", "&#9654; Einschalten");
+      s.replace("*powercolor*", "#00AA00");
+      s.replace("*radiostatus*", "&#9632; Standby (Stream pausiert &middot; 0 KB Traffic)");
+      s.replace("*statuscolor*", "#888888");
+    }
+
     if (isMuted) {
       s.replace("*mutelabel*", "Ton an");
     } else {
@@ -135,7 +156,7 @@ void setup_senderConfig() {
       fields.concat("<p>\n<h4>Platz ");
       fields.concat(j+1);
       fields.concat(":</h4>\n");
-      if (j == curStation) {
+      if (j == curStation && isPlaying) {
         fields.concat("<span class='playing'>&#9836;</span>");
       } else {
         fields.concat("<a title='Diesen Sender spielen' href='?play=");

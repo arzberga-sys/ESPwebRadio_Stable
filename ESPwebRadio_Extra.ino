@@ -54,7 +54,30 @@ uint8_t actStation = 0;   //index for current station in station list used for s
 uint32_t lastchange = 0;  //time of last selection change
 float currentVolume = 1.0;
 bool isMuted = false;
+bool isPlaying = true;    // Playback state: true = streaming, false = standby (0 traffic)
 
+bool webPlayRequest = false;
+bool webPowerRequest = false;
+
+extern void applyVolume();
+extern void muteOutput();
+extern void stopPlaying();
+extern void startUrl();
+extern int loop_audio();
+
+void togglePlayStop() {
+  if (isPlaying) {
+    Serial.println("Stopping radio stream (Standby)...");
+    stopPlaying();
+    muteOutput();
+    isPlaying = false;
+  } else {
+    Serial.printf("Starting radio stream (Station %d: %s)...\n", actStation, stationlist[actStation].name);
+    applyVolume();
+    isPlaying = true;
+    startUrl();
+  }
+}
 
 //setup
 void setup() {
@@ -92,39 +115,44 @@ void setup() {
     isMuted = pref.getBool("mute", false);
   }
   
-  extern void applyVolume();
   applyVolume();
   
   //set active station to current station 
   //show on display and start streaming
   actStation = curStation;
   //showStation();
+  isPlaying = true;
   startUrl();
 }
 
-bool webPlayRequest = false;
-
 // main loop
 void loop() {
+  if (webPowerRequest) {
+    webPowerRequest = false;
+    togglePlayStop();
+  }
+
   if (webPlayRequest) {
     webPlayRequest = false;
     Serial.printf("Web UI triggered switch to station %d...\n", actStation);
+    isPlaying = true;
+    applyVolume();
     startUrl();
   }
 
-  //check if stream has ended normally not on ICY streams
-  if (!loop_audio()) {
-    static unsigned long lastRetry = 0;
-    if (millis() - lastRetry > 5000) {
-      Serial.printf("Stream stopped or failed. Retrying in 5 seconds...\n");
-      lastRetry = millis();
-      startUrl();
+  // Only decode and stream audio if currently playing
+  if (isPlaying) {
+    //check if stream has ended normally not on ICY streams
+    if (!loop_audio()) {
+      static unsigned long lastRetry = 0;
+      if (millis() - lastRetry > 5000) {
+        Serial.printf("Stream stopped or failed. Retrying in 5 seconds...\n");
+        lastRetry = millis();
+        startUrl();
+      }
     }
-  } else {
-    // If audio is successfully looping, keep our retry timer fresh
-    // so we don't immediately retry if it stops.
   }
+
   //read events from rotary encoder
   rotary_loop();
-
 }

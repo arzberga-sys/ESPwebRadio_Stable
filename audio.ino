@@ -95,6 +95,12 @@ void applyVolume() {
   }
 }
 
+void muteOutput() {
+  if (out) {
+    out->SetGain(0.0);
+  }
+}
+
 // to be called in 'loop()'
 int loop_audio() {
   if (decoder && decoder->isRunning()) {

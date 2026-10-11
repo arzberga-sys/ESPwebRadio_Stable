@@ -22,6 +22,18 @@ AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(
 // to be called in 'loop()'
 // handle events from rotary encoder
 void rotary_loop() {
+  // Check button click on pin 27 to toggle Play / Stop
+  static bool lastBtnState = HIGH;
+  static unsigned long lastBtnTime = 0;
+  int btnState = digitalRead(ROTARY_ENCODER_BUTTON_PIN);
+  if (btnState == LOW && lastBtnState == HIGH && (millis() - lastBtnTime > 350)) {
+    lastBtnTime = millis();
+    Serial.println("Rotary encoder button clicked -> toggle Play/Stop");
+    extern void togglePlayStop();
+    togglePlayStop();
+  }
+  lastBtnState = btnState;
+
   // dont do anything unless value changed
   if (rotaryEncoder.encoderChanged()) {
     uint16_t v = rotaryEncoder.readEncoder();
@@ -35,8 +47,10 @@ void rotary_loop() {
   }
   
   if ((lastchange > 0) && ((millis() - lastchange) > 600)) {
-    if (curStation != actStation) {
+    extern bool isPlaying;
+    if (curStation != actStation || !isPlaying) {
       actStation = curStation;
+      isPlaying = true;
       Serial.printf("Auto-switching to station %s... Loading stream!\n", stationlist[actStation].name);
       pref.putUShort("station", curStation);
       
@@ -53,6 +67,7 @@ void IRAM_ATTR readEncoderISR() { rotaryEncoder.readEncoder_ISR(); }
 
 // to be called in 'setup()'
 void setup_rotary() {
+  pinMode(ROTARY_ENCODER_BUTTON_PIN, INPUT_PULLUP);
   // start rotary encoder instance
   rotaryEncoder.begin();
   rotaryEncoder.setup(readEncoderISR);

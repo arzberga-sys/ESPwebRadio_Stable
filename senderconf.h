@@ -48,25 +48,31 @@ const char SENDER_page[] PROGMEM = R"=====(
         border-radius: 10px;
         text-decoration: none !important;
         margin-right: 10px;
+        display: inline-block;
       }
       .btn:hover {
-        background-color: #3333CC;
+        opacity: 0.85;
       }
 
     </style>
   <head>
   <body>
     <h1>ESP-Webradio</h1>
+    <div style="font-size: 1.3em; font-weight: bold; margin: 10px 0 15px 0; color: *statuscolor*;">
+      *radiostatus*
+    </div>
     <p>
       *feedback1*
     </p>
+    <p style="margin: 20px 0;">
+      <a href="?power=toggle" class="btn" style="background-color: *powercolor*;">*powerlabel*</a>
+      <a href="?vol=mute" class="btn">*mutelabel*</a>
+    </p>
+    <hr>
     <h3>Lautstärke</h3>
     <form method="POST">
       <input type="range" name="volume" min="0" max="20" value="*volvalue*" onchange="this.form.submit()" style="width: 80%; height: 30px; margin-bottom: 20px;">
     </form>
-    <p>
-      <a href="?vol=mute" class="btn">*mutelabel*</a>
-    </p>
     <hr>
     <h3>Senderliste</h3>
     <form method="POST">
